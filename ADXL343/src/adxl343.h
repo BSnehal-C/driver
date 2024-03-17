@@ -89,14 +89,17 @@ typedef enum {
   ADXL343_RANGE_16_G , /* +/- 16g */
    
 } adxl343_range_enum;
-typedef struct adxl_i2c_info
+typedef struct adxl343_handle
 {
 	/*Slave address used to communicate with adxl343*/	
 	uint8_t i2c_address;
 	
 	/*This indicates - timeout in ms for clock stretching allowed by slave.*/
 	uint8_t i2c_timeout;
-}	adxl343_i2c_info;
+
+	bool is_initialized;
+	
+}	adxl343_handle;
 	
 /* -------------------------------------------------------------------------------------------------------------------
 * This struct must be declared somewhere to use the ADC.
@@ -105,6 +108,12 @@ typedef struct adxl_i2c_info
 */
 typedef struct adxl
 {
+	/*Slave address used to communicate with adxl343*/	
+	uint8_t i2c_address;
+	
+	/*This indicates - timeout in ms for clock stretching allowed by slave.*/
+	uint8_t i2c_timeout;
+
 	/* enum to set g range.
 	@ref ADXL3XX_REG_DATA_FORMAT register
 	@default value: +/- 2g */
@@ -112,33 +121,34 @@ typedef struct adxl
 
 	/* @brief: enum to set data rate.
     @ref BW_RATE-0x2C register
-	@default value: ADXL343_DATARATE_100_HZ */
+	@default value: ADXL343_DATARATE_100_HZ 
+	@note: consider i2c buadrate while setting data rate of accelerometer, ref data sheet*/
     adxl343_dataRate data_rate;
 
-	/* to set INT_INVERT Bit.
-	@ref ADXL3XX_REG_DATA_FORMAT register
-	@default value: active high */
-	bool interrupt_inv; 
   
 	/*to set FULL_RES Bit.
 	@ref ADXL3XX_REG_DATA_FORMAT register
 	@default value: 10bit mode */
 	bool full_res; 
 	
+ 
+	/*todo - below configuration not implemented in init function */
 	/*to set Justify Bit Bit.
 	@ref ADXL3XX_REG_DATA_FORMAT register
 	@default value: right-justified mode with sign extension. */
-	bool justify; 
-	
-	
+	//bool justify; 	
 
 	/*setting true enables link mode*/
-	bool link_enable;
+	//bool link_enable;
 	
-	
+	/* to set INT_INVERT Bit.
+	@ref ADXL3XX_REG_DATA_FORMAT register
+	@default value: active high */
+	//bool interrupt_inv; 
+
 	/*setting true enables auto sleep Mode*/
 	/*note: enabling auto sleeps also enables link mode*/
-	bool auto_sleep_enable;
+	//bool auto_sleep_enable;
 	
 	 
   
@@ -150,27 +160,39 @@ typedef struct adxl
 // --------------------------------------------------------------------------------------------------------------------
 
 
-extern bool adxl343_init(const adxl343_config *adxl343, const adxl343_i2c_info *adxl343_i2c);
+/*******************************************************************************************************************
+* 
+* @brief:	This Function initializes ADXL343 with adxl343_conf and sets I2C slave address and timeout
+* @param:  	adxl343_conf: Pointer to adxl343_config 
+*		   	i2c_address: The 7-bit I2C address of device.
+*			i2c_timeout: The I2C timeout in ms for clock stretching allowed by slave device.	
+* @return: FunctionStatus  	Returns FUNCTION_STATUS_OK if the transmission was successful.
+*                          	Returns FUNCTION_STATUS_ERROR for non-specific errors.
+*							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
+*                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+*							Returns FUNCTION_WRONG_DEVICE_ID if device returns device id other than 0xE5		
+*******************************************************************************************************************/
+extern FunctionStatus adxl343_init(const adxl343_config *adxl343_conf, adxl343_handle *handle );
 
-/**********************************************************************************
+/*******************************************************************************************************************
 * 
 * @brief:  This Function sets the data rate for the ADXL343 
-* @param:  adxl343_i2c: pointer to adxl343_i2c_info 
+* @param:  adxl343_i2c: pointer to adxl343_handle 
 *		   DataRate: The data rate to set
 * @return: FunctionStatus  	Returns FUNCTION_STATUS_OK if the transmission was successful.
 *                          	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
 *                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
 * @note: consider i2c buadrate while setting data rate of accelerometer, ref data sheet
-/**********************************************************************************/
+*******************************************************************************************************************/
 
-extern FunctionStatus setDataRate(const adxl343_i2c_info *adxl343_i2c, adxl343_dataRate DataRate);
+extern FunctionStatus setDataRate(const adxl343_handle *adxl343_i2c, adxl343_dataRate DataRate);
 
 
 
 /**********************************************************************************
 * @brief: This Function sets the data rate for the ADXL343 
-* @param:  adxl343_i2c: pointer to adxl343_i2c_info 
+* @param:  adxl343_i2c: pointer to adxl343_handle 
 *		   DataRange: The data rate to set
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the transmission was successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
@@ -178,15 +200,41 @@ extern FunctionStatus setDataRate(const adxl343_i2c_info *adxl343_i2c, adxl343_d
 *                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
 /**********************************************************************************/
 
-extern FunctionStatus setDataRange(const adxl343_i2c_info *adxl343_i2c, adxl343_range_enum DataRange);
+extern FunctionStatus setDataRange(const adxl343_handle *adxl343_i2c, adxl343_range_enum DataRange);
 
 
+/**********************************************************************************
+* @brief: This Function gets device id of adxl343
+* @param:  handle: pointer to adxl343_handle 
+*		   device_id  : pointer to variable where device id stored by function
+* @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the transmission was successful.
+*                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
+*							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
+*                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+/**********************************************************************************/
+extern FunctionStatus getDeviceID(const adxl343_handle *adxl343, uint8_t* device_id);
 
-extern FunctionStatus getDeviceID(const adxl343_i2c_info *adxl343, uint8_t* device_id);
 
-
-
-
-
+/**********************************************************************************
+* @brief:  This Function updates FULL_RES bit in DATA_FORMAT register
+* @param[in]: handle -  Pointer to an adxl343_handle structure
+* @param[in]: is_enable - Represents FULL_RES bit value
+* @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
+*                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
+*							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
+*                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+							Returns FUNCTION_STATUS_NOT_INITIALIZED if handle is not initialized
+/**********************************************************************************/
+extern FunctionStatus update_full_res_bit(const adxl343_handle *handle, bool is_enable);
 	
-	
+/**********************************************************************************
+* @brief:  This Function gets FULL_RES bit value in DATA_FORMAT register
+* @param[in]: *handle -  Pointer to an adxl343_handle structure
+* @param[out]: *is_enable - Pointer to bool datatype, FULL_RES bit value read from DATA_FORMAT register
+* @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
+*                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
+*							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
+*                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+							Returns FUNCTION_STATUS_NOT_INITIALIZED if handle is not initialized
+/**********************************************************************************/
+extern FunctionStatus get_full_res_bit(const adxl343_handle *handle, bool *is_enable);	

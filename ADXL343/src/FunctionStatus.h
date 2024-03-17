@@ -23,6 +23,9 @@ typedef enum
     FUNCTION_STATUS_ARGUMENT_ERROR,                     //!< At least one argument of the function was NULL (invalid)
     FUNCTION_STATUS_BOUNDARY_ERROR,                     //!< At least one argument is out of boundary
     FUNCTION_STATUS_TIMEOUT,                            //!< A timeout occurred during function execution
+
+
+    FUNCTION_WRONG_DEVICE_ID
 	
 	
 	
