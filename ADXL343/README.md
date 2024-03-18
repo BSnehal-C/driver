@@ -14,7 +14,8 @@ This driver is scalable to add full functionality of adxl343.
 
 ## Prerequisite
 1. The required hardware connections must be established to function ADXL343 in I2C mode.
-2. I2C driver must be initialized.
+2. I2C driver must be initialized.![image](https://github.com/BSnehal-C/driver/assets/151748124/3ab7a50d-f110-4b8f-9cf3-79d3d74ac137)
+
 
 ## Brief Explanation
 ### Initialization (adxl343_init):
@@ -120,7 +121,7 @@ https://www.analog.com/media/en/technical-documentation/application-notes/AN-102
 
 # Unit Testing
 
-##Prerequisite
+## Prerequisite
 1. Ruby 2.5.1 installed
 2. ceedling installed
    ```
@@ -135,6 +136,6 @@ Open the command line interface (CLI), navigate to the test folder directory, an
 
 ceedling test:all
 
-##Limitations
+## Limitations
 Only a test case has been included in \ADXL343\test\test directory to illustrate the unit test framework with the getDeviceId function.
-![image](https://github.com/BSnehal-C/driver/assets/151748124/4a7e5ecd-77e5-43cb-8670-4b044b79e1c7)
+
