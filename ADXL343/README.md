@@ -16,6 +16,83 @@ This driver is scalable to add full functionality of adxl343.
 1. The required hardware connections must be established to function ADXL343 in I2C mode.
 2. I2C driver must be initialized.
 
+## Brief Explanation
+### Initialization (adxl343_init):
+
+The function initializes the ADXL343 with the provided configuration (adxl343_conf).
+It configure handle with the I2C slave address and timeout provided in adxl343_conf. This handle can be used in later stage of I2C communication.
+Verifies successful communication by checking the device ID.
+Configures data rate, data range, and resolution.
+Returns error code if initialization fails.
+
+for example:
+
+```
+  static adxl343_handle handle;
+  
+  const adxl343_config config = {
+  
+  	.i2c_address = I2C_ADDR1,	
+   
+  	.i2c_timeout = 100,
+   
+  	.range = ADXL343_RANGE_2_G,
+   
+  	.data_rate = ADXL343_DATARATE_100_HZ,
+   
+  	.full_res = true; 
+   
+   }
+    
+  int main(void)
+  {  
+  	adxl343_init(&config, &handle);   
+  }
+
+```
+
+### Starting Mearurement
+
+Measurement can be started by calling API start_measurment()
+Asynchronous readings of acceleration data can lead to accessing the acceleration data registers while they are being updated.
+To avoid this, it is recommended to enable DATA_READY interrupt functionality, so that the host processor samples immediately after the DATA_READY interrupt goes high.
+DATA READY interrupt can be enabled using API "enable_interrupt" after starting measurement.
+
+
+### Runtime 
+
+Acceleration scaled data can be read by using APIs get_DATAX(), get_DATAY(), get_DATAZ() once DATA_READY interrupt occured.
+These APIs returns error code for unsuccessful communication.
+
+
+### Updating configuration at runtime
+
+
+#### Below APIs are given to write and read configuration at rutime.
+
+setDataRate, getDataRate 
+
+setDataRange, getDataRange
+
+update_full_res_bit
+
+
+
+#### Generic functions to write and read data to/from registers.
+
+setRegister
+
+getRegister
+
+
+### It is recommended that to stop measurement before changing configuration in run time, then start again with below APIs.
+
+start_measurment
+
+stop_measurment
+
+
+
 ## Folder structure
 /src includes ADXL343 source and header files .
 
@@ -26,6 +103,14 @@ This driver is scalable to add full functionality of adxl343.
 ### Folders to be added
 /examples includes driver ADXL343 sample application code.
 
+
+## Instructions to Build files
+### Prerequisite
+gcc must be installed on your system
+
+Note: This driver is tested on gcc version 13.2.0
+
+Driver can be build by running Run.Bat file provided in driver\ADXL343 folder 
 
 ## Reference Documents
 
