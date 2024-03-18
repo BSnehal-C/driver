@@ -3,12 +3,12 @@
 The ADXL343 is a  3-axis accelerometer by Analog Devices. It has with 10- to 13-bit resolution with measurement at up to ±16 g. Digital output data is formatted as 16-bit twos complement and is accessible through either a SPI (3- or 4-wire) or I2C digital interface.
 
 #  ADXL343 Driver
-Driver ADXL343 is the driver of adxl343 developed to work in bypass mode with data ready interrupt. It provides acceleration scaled reading in bypass mode of operation and provide functions to initialze required registers.
+Driver ADXL343 is the driver of adxl343 developed to work in bypass mode with data ready interrupt. It provides acceleration scaled reading in bypass mode of operation and provides functions to initialize required registers.
 This driver is scalable to add full functionality of adxl343.
 
 ## Limitations:
 1. Functions provided to get acceleration scaled reading only in Bypass Mode.
-2. Dont Supports readings with in left justied configuration.
+2. Don't Supports readings with in left justified configuration.
 3. Functions provided to set and get registers which required only to operate in Bypass Mode with data ready interrupt.
 4. Support for SPI communication is not provided.
 
@@ -51,9 +51,9 @@ for example:
 
 ```
 
-### Starting Mearurement
+### Starting Measurement
 
-Measurement can be started by calling API start_measurment()
+Measurement can be started by calling API start_measurment().
 Asynchronous readings of acceleration data can lead to accessing the acceleration data registers while they are being updated.
 To avoid this, it is recommended to enable DATA_READY interrupt functionality, so that the host processor samples immediately after the DATA_READY interrupt goes high.
 DATA READY interrupt can be enabled using API "enable_interrupt" after starting measurement.
@@ -61,14 +61,14 @@ DATA READY interrupt can be enabled using API "enable_interrupt" after starting 
 
 ### Runtime 
 
-Acceleration scaled data can be read by using APIs get_DATAX(), get_DATAY(), get_DATAZ() once DATA_READY interrupt occured.
+Acceleration scaled data can be read by using APIs get_DATAX(), get_DATAY(), get_DATAZ() once DATA_READY interrupt occurred.
 These APIs returns error code for unsuccessful communication.
 
 
 ### Updating configuration at runtime
 
 
-#### Below APIs are given to write and read configuration at rutime.
+#### Below APIs are given to write and read configuration at runtime.
 
 setDataRate, getDataRate 
 
@@ -137,8 +137,4 @@ ceedling test:all
 
 ##Limitations
 Only a test case has been included in \ADXL343\test\test directory to illustrate the unit test framework with the getDeviceId function.
-
-
-   
-
-
+![image](https://github.com/BSnehal-C/driver/assets/151748124/4a7e5ecd-77e5-43cb-8670-4b044b79e1c7)
