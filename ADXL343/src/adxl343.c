@@ -19,11 +19,10 @@ static uint8_t write16(const adxl343_handle *handle,  uint8_t RegAddr, const uin
 
 
 
-/*******************************************************************************************************************
-* 
+/******************************************************************************************************************** 
 * @brief:	This Function initializes ADXL343 with adxl343_conf and sets I2C slave address and timeout
-* @param:  	adxl343_conf[in]: Pointer to adxl343_config 
-*           adxl343_conf[out]: Pointer to adxl343_handle	
+* @param:  	adxl343_conf[IN]: Pointer to adxl343_config
+* @param	handle[OUT]: Pointer to handle
 * @return: FunctionStatus  	Returns FUNCTION_STATUS_OK if the transmission was successful.
 *                          	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -71,22 +70,34 @@ FunctionStatus adxl343_init(const adxl343_config *adxl343_conf, adxl343_handle *
 	
 	return Status;
 }
-/**********************************************************************************
-* 
+/******************************************************************************************************************** 
 * @brief:  This Function sets the data rate for the ADXL343 
-* @param:  handle: pointer to adxl343_handle 
-*		   DataRate: The data rate to set
+* @param:  handle[IN]: pointer to adxl343_handle 
+*		   DataRate[IN]: The data rate to set
 * @return: FunctionStatus  	Returns FUNCTION_STATUS_OK if the transmission was successful.
 *                          	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
 *                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+*							Returns FUNCTION_STATUS_NOT_INITIALIZED if handle is not initialized
 * @note: consider i2c buadrate while setting data rate of accelerometer, ref data sheet
-/**********************************************************************************/
+*******************************************************************************************************************/
 FunctionStatus setDataRate(const adxl343_handle *handle, adxl343_dataRate DataRate)
 {
 	
 	uint8_t Data;
 	
+	/* check handle */
+    if (handle == NULL)                                                                         
+    {
+        return FUNCTION_STATUS_ARGUMENT_ERROR;                                                                               
+    }
+
+	/* check if handle initialized */
+    if (handle->is_initialized != true)                                                                    
+    {
+        return FUNCTION_STATUS_NOT_INITIALIZED;                                                                               
+    }
+
 	ASSERT(read8(handle, ADXL343_REG_BW_RATE, &Data));
 
 	Data = (Data & 0xF0) | ((uint8_t)DataRate & 0x0F);
@@ -103,10 +114,23 @@ FunctionStatus setDataRate(const adxl343_handle *handle, adxl343_dataRate DataRa
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
 *                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+*							Returns FUNCTION_STATUS_NOT_INITIALIZED if handle is not initialized
 /**********************************************************************************/
 FunctionStatus setDataRange(adxl343_handle *handle, adxl343_range DataRange)
 {
 	uint8_t Data;
+
+	/* check handle */
+    if (handle == NULL)                                                                         
+    {
+        return FUNCTION_STATUS_ARGUMENT_ERROR;                                                                               
+    }
+
+	/* check if handle initialized */
+    if (handle->is_initialized != true)                                                                    
+    {
+        return FUNCTION_STATUS_NOT_INITIALIZED;                                                                               
+    }
 
 	handle->data_range = DataRange;
 	ASSERT(read8(handle, ADXL343_REG_DATA_FORMAT, &Data));
@@ -119,16 +143,29 @@ FunctionStatus setDataRange(adxl343_handle *handle, adxl343_range DataRange)
 
 /**********************************************************************************
 * @brief: This Function gets device id of adxl343
-* @param:  handle: pointer to adxl343_handle 
-*		   device_id  : pointer to variable where device id stored by function
+* @param:  handle[IN]: pointer to adxl343_handle 
+*		   device_id[IN]  : pointer to variable where device id stored by function
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the transmission was successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
 *                         	Returns FUNCTION_STATUS_TIMEOUT if the operation did not complete within the specified timeout period.
+*							Returns FUNCTION_STATUS_NOT_INITIALIZED if handle is not initialized
 /**********************************************************************************/
 FunctionStatus getDeviceID(const adxl343_handle *handle, uint8_t* device_id)
 {	
 	
+	/* check handle */
+    if (handle == NULL)                                                                         
+    {
+        return FUNCTION_STATUS_ARGUMENT_ERROR;                                                                               
+    }
+
+	/* check if handle initialized */
+    if (handle->is_initialized != true)                                                                    
+    {
+        return FUNCTION_STATUS_NOT_INITIALIZED;                                                                               
+    }
+
 	FunctionStatus status = read8(handle, ADXL343_REG_DEVID, device_id);
 	if((status == FUNCTION_STATUS_OK) && (*device_id != DEVICE_ID))
 	{
@@ -141,8 +178,8 @@ FunctionStatus getDeviceID(const adxl343_handle *handle, uint8_t* device_id)
 
 /**********************************************************************************
 * @brief:  This Function updates FULL_RES bit in DATA_FORMAT register
-* @param: handle[IN], OUT] -  Pointer to an adxl343_handle structure
-* @param[IN]: is_enable - Represents FULL_RES bit value
+* @param: handle [IN][OUT] - Pointer to an adxl343_handle structure
+* @param: is_enable [IN] - Represents FULL_RES bit value
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -179,8 +216,8 @@ FunctionStatus update_full_res_bit(adxl343_handle *handle, bool is_enable)
 
 /**********************************************************************************
 * @brief:  This Function gets FULL_RES bit value in DATA_FORMAT register
-* @param[IN]: *handle -  Pointer to an adxl343_handle structure
-* @param[OUT]: *is_enable - Pointer to bool datatype, FULL_RES bit value read from DATA_FORMAT register
+* @param: *handle [IN]-  Pointer to an adxl343_handle structure
+* @param: *is_enable [OUT] - Pointer to bool datatype, FULL_RES bit value read from DATA_FORMAT register
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -313,12 +350,12 @@ FunctionStatus enable_interrupt(const adxl343_handle *handle, adxl343_interrupt 
 	/* set measurement bit*/
 	data |= (1 << int_type);   
 
-    return write8(handle, ADXL343_REG_POWER_CTL, &data);                                                                                  
+    return write8(handle, ADXL343_REG_INT_ENABLE, &data);                                                                                  
 }
 /**********************************************************************************
 * @brief:  This Function gets scaled x-axis acceleration value in g unit
-* @param[in]: *handle - Pointer to an adxl343_handle structure
-* @param[out]:*DataX - Pointer to double datatype
+* @param: *handle[in] - Pointer to an adxl343_handle structure
+* @param: *DataX[out] - Pointer to double datatype
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -388,8 +425,8 @@ FunctionStatus get_DATAX(const adxl343_handle *handle, double *DataX)
 
 /**********************************************************************************
 * @brief:  This Function gets scaled y-axis acceleration value in g unit
-* @param[in]: *handle - Pointer to an adxl343_handle structure
-* @param[out]:*DataY - Pointer to double datatype
+* @param: *handle[in] - Pointer to an adxl343_handle structure
+* @param: *DataY[out] - Pointer to double datatype
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -453,8 +490,8 @@ FunctionStatus get_DATAY(const adxl343_handle *handle, double *DataY)
 
 /**********************************************************************************
 * @brief:  This Function gets scaled z-axis acceleration value in g unit
-* @param[in]: *handle - Pointer to an adxl343_handle structure
-* @param[out]:*DataZ - Pointer to double datatype
+* @param: *handle[in] - Pointer to an adxl343_handle structure
+* @param: *DataZ[out] - Pointer to double datatype
 * @return: FunctionStatus 	Returns FUNCTION_STATUS_OK if the operation is successful.
 *                         	Returns FUNCTION_STATUS_ERROR for non-specific errors.
 *							Returns FUNCTION_STATUS_ARGUMENT_ERROR if null pointers or invalid arguments are passed.
@@ -589,7 +626,9 @@ FunctionStatus getRegister(const adxl343_handle *handle, const uint8_t Reg, uint
     return FUNCTION_STATUS_OK;  
 }
 
-
+/**********************************************************************************
+ * 
+ **********************************************************************************/
 static FunctionStatus read8(const adxl343_handle *handle,  uint8_t RegAddr, uint8_t* data)
 {
 		
@@ -618,6 +657,9 @@ static FunctionStatus read8(const adxl343_handle *handle,  uint8_t RegAddr, uint
 	return FUNCTION_STATUS_OK;
 }
 
+/**********************************************************************************
+ * 
+ **********************************************************************************/
 static FunctionStatus read16(const adxl343_handle *handle,  uint8_t RegAddr, uint8_t* data)
 {
 	if((handle == NULL) || (data == NULL) || isRegInvalid(RegAddr))
@@ -643,6 +685,9 @@ static FunctionStatus read16(const adxl343_handle *handle,  uint8_t RegAddr, uin
 	return FUNCTION_STATUS_OK;	
 }
 
+/**********************************************************************************
+ * 
+ **********************************************************************************/
 static uint8_t write8(const adxl343_handle *handle,  uint8_t RegAddr, const uint8_t* data)
 {
 	if((handle == NULL) || (data == NULL) || isRegInvalid(RegAddr))
@@ -663,6 +708,9 @@ static uint8_t write8(const adxl343_handle *handle,  uint8_t RegAddr, const uint
 	return FUNCTION_STATUS_OK;	
 }
 
+/**********************************************************************************
+ * 
+ **********************************************************************************/
 static uint8_t write16(const adxl343_handle *handle,  uint8_t RegAddr, const uint8_t* data)
 {
 	if((handle == NULL) || (data == NULL) || isRegInvalid(RegAddr))
