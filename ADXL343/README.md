@@ -118,3 +118,27 @@ https://www.analog.com/media/en/technical-documentation/application-notes/AN-107
 https://electronics.stackexchange.com/questions/545643/g-lsb-meaning-in-accelerometer-measurements
 https://www.analog.com/media/en/technical-documentation/application-notes/AN-1025.pdf
 
+# Unit Testing
+
+##Prerequisite
+1. Ruby 2.5.1 installed
+2. ceedling installed
+   ```
+       Ceedling:: 0.31.1
+       CMock:: 2.5.4
+       Unity:: 2.5.4
+       CException:: 1.3.3
+   ```
+
+## How to build test
+Open the command line interface (CLI), navigate to the test folder directory, and execute the following command:
+
+ceedling test:all
+
+##Limitations
+Only a test case has been included in \ADXL343\test\test directory to illustrate the unit test framework with the getDeviceId function.
+
+
+   
+
+
