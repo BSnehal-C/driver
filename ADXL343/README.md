@@ -14,7 +14,7 @@ This driver is scalable to add full functionality of adxl343.
 
 ## Prerequisite
 1. The required hardware connections must be established to function ADXL343 in I2C mode.
-2. I2C driver must be initialized.![image](https://github.com/BSnehal-C/driver/assets/151748124/3ab7a50d-f110-4b8f-9cf3-79d3d74ac137)
+2. I2C driver must be initialized.
 
 
 ## Brief Explanation
