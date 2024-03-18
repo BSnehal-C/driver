@@ -9,7 +9,6 @@
 
 // ProjectIncludes
 // All include files that are provided by the project
-#include "i2c_driver.h"
 #include "adxl343.h"
  
 static FunctionStatus read8(const adxl343_handle *handle,  uint8_t RegAddr, uint8_t* data);

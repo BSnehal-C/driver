@@ -31,6 +31,7 @@
 
 // ProjectIncludes
 // All include files that are provided by the project
+#include "i2c_driver.h"
 #include "FunctionStatus.h"                     //!< Include to use the generic function status enumeration type
 // --------------------------------------------------------------------------------------------------------------------
 // Constant and macro definitions 
